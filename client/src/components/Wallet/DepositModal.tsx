@@ -6,15 +6,14 @@ interface DepositModalProps {
   onClose: () => void;
 }
 
-const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
+const depositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const [amount, setAmount] = useState('100'); // Default amount
-  const { invoice, isLoading, error, handleCreateInvoice } = useNowPayments();
+  const { invoice, isPending, error, handleCreateInvoice } = useNowPayments();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleCreateInvoice(parseFloat(amount), 'USD'); // Assuming USD for now
   };
-
   if (!isOpen) return null;
 
   return (
