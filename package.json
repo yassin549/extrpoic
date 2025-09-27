@@ -7,7 +7,8 @@
     "start": "node src/server.js",
     "dev": "nodemon --env-file=.env src/server.js",
     "test": "jest",
-    "build": "cd client && npm install && npm run build"
+    "build": "cd client && npm install && npm run build",
+    "cache-bust": "echo 'clearing cache'"
   },
   "dependencies": {
     "axios": "^0.21.1",
