@@ -1,4 +1,5 @@
-if (process.env.NODE_ENV !== 'production') {
+// Only load .env file in local development
+if (process.env.NODE_ENV !== 'production' && !process.env.RAILWAY_ENVIRONMENT) {
   require('dotenv').config();
 }
 const http = require('http');
