@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useWebSocket } from './useWebSocket';
-import type { GameEvent } from '../../types/ws-protocol';
+import type { GameEvent } from '../lib/ws-protocol';
 
 type GameStatus = 'idle' | 'connecting' | 'open' | 'freeze' | 'running' | 'crashed' | 'settling';
 

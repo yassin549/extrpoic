@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import crypto from 'crypto';
 
 // This function must be a client-side reimplementation of the backend's logic
