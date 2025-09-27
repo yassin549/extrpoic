@@ -1,0 +1,57 @@
+/* GameClient.css */
+
+div.game-client {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+}
+
+h1 {
+  color: #00ffcc;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.multiplier-display {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #ff00ff;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.cashout-button {
+  background-color: #ff0066;
+  color: #ffffff;
+}
+
+.cashout-button:hover:not(:disabled) {
+  background-color: #ff3366;
+}
+
+.start-button {
+  background-color: #0066ff;
+  color: #ffffff;
+}
+
+.start-button:hover:not(:disabled) {
+  background-color: #3399ff;
+}

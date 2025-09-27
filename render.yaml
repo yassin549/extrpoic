@@ -1,0 +1,33 @@
+# Render Blueprint for the Aviator Casino
+
+databases:
+  - name: aviator_db
+    databaseName: aviator
+    user: aviator_user
+
+services:
+  - type: web
+    name: aviator-casino
+    env: node
+    plan: free # Or 'starter' for more resources
+    buildCommand: "npm run build"
+    startCommand: "npm start"
+    healthCheckPath: "/api/csrf-token" # A lightweight endpoint to check if the server is up
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aviator_db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true # Automatically generate a secure secret
+      - key: NOWPAYMENTS_API_KEY
+        sync: false # Do not sync this from the repo, set it in the Render dashboard
+      - key: NOWPAYMENTS_IPN_SECRET
+        sync: false # Do not sync this from the repo, set it in the Render dashboard
+      - key: BASE_URL
+        fromService:
+          type: web
+          name: aviator-casino
+          property: url
