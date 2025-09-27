@@ -26,8 +26,3 @@ services:
         sync: false # Do not sync this from the repo, set it in the Render dashboard
       - key: NOWPAYMENTS_IPN_SECRET
         sync: false # Do not sync this from the repo, set it in the Render dashboard
-      - key: BASE_URL
-        fromService:
-          type: web
-          name: aviator-casino
-          property: url

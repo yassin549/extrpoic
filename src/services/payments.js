@@ -27,7 +27,7 @@ paymentsRouter.post('/invoice', async (req, res) => {
       price_amount: amount,
       price_currency: currency,
       order_id: internalDepositId.toString(),
-      ipn_callback_url: `${process.env.BASE_URL}/api/payments/ipn`,
+      ipn_callback_url: `${process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000'}/api/payments/ipn`,
     }, {
       headers: { 'x-api-key': NOWPAYMENTS_API_KEY }
     });
