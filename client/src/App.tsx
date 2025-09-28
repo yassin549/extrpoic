@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import AviatorCanvas from './components/Game/AviatorCanvas';
 import WalletModal from './components/Wallet/WalletModal';
+import { useGameState } from './hooks/useGameState';
 
 function App() {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
+  const { gameState, isConnected } = useGameState();
 
   return (
     <main className="w-screen h-screen bg-[#06060A] text-white flex flex-col items-center justify-center p-4">
@@ -16,7 +18,7 @@ function App() {
         </button>
       </div>
       <div className="w-full max-w-4xl h-[600px]">
-        <AviatorCanvas />
+        <AviatorCanvas gameState={gameState} isConnected={isConnected} />
       </div>
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
     </main>

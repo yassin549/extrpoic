@@ -1,8 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import { useGameState } from '../../hooks/useGameState';
 
-const AviatorCanvas: React.FC = () => {
-  const { gameState, isConnected } = useGameState();
+// Define the types for the props we're receiving from App.tsx
+interface AviatorCanvasProps {
+  gameState: any; // A more specific type should be used here in the future
+  isConnected: boolean;
+}
+
+const AviatorCanvas: React.FC<AviatorCanvasProps> = ({ gameState, isConnected }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // This effect will handle the drawing on the canvas
