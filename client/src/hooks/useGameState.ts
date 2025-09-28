@@ -13,11 +13,9 @@ interface GameState {
   serverSeed?: string;
 }
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3000';
-
 export const useGameState = () => {
+  const { lastMessage, isConnected } = useWebSocket<GameEvent>({ reconnect: true });
   const [gameState, setGameState] = useState<GameState>({ status: 'idle', currentMultiplier: 1.00 });
-  const { lastMessage, isConnected } = useWebSocket<GameEvent>(WS_URL, { reconnect: true });
 
   useEffect(() => {
     if (!isConnected) {
