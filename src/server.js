@@ -2,11 +2,9 @@ const http = require('http');
 const express = require('express');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const csrf = require('csurf');
-
 // Import services
-const authRouter = require('./services/auth');
-const { gameRouter, attachWebSocketServer } = require('./services/game');
+const { authRouter, verifyToken } = require('./services/auth');
+const { attachWebSocketServer } = require('./services/game');
 const paymentsRouter = require('./services/payments');
 const adminRouter = require('./services/admin');
 
@@ -21,19 +19,10 @@ app.use(cookieParser());
 // In a production app, you would configure CORS properly
 // For example: app.use(cors({ origin: 'https://your-frontend-domain.com' }));
 
-// CSRF protection setup
-const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
-
-app.get('/api/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
-
 // --- API Routes ---
 app.use('/api/auth', authRouter);
-app.use('/api/game', gameRouter);
-app.use('/api/payments', paymentsRouter);
-app.use('/api/admin', adminRouter);
+app.use('/api/payments', verifyToken, paymentsRouter);
+app.use('/api/admin', verifyToken, adminRouter);
 
 // --- Serve Frontend ---
 if (process.env.NODE_ENV === 'production') {

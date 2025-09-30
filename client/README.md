@@ -1,64 +1,70 @@
-# Aviator Casino - Frontend
+# Aviator Game - Frontend
 
-This client is a React + TypeScript single-page app for the Aviator game. It integrates with the backend game WebSocket for real-time rounds and NOWPayments for crypto deposits. Demo accounts are simulated and do not interact with payments. Withdrawals are requested in-app but processed manually by the operator. Follow security best practices: do not store secrets in the client.
+This is the complete frontend codebase for the Aviator-style casino game, built with React, Vite, TypeScript, and Tailwind CSS. It includes a full component library, state management, and a deterministic simulator for UI development.
 
-## Tech Stack
-
-- **Framework**: React + TypeScript (Vite)
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Icons**: lucide-react
-- **Animations**: framer-motion
-- **Data Fetching**: TanStack Query (react-query)
-- **State Management**: Zustand
-- **Charts**: recharts
-- **E2E Testing**: Cypress
-
-## Getting Started
+## 1. Getting Started
 
 ### Prerequisites
 
 - Node.js (v18+)
 - npm
 
-### Installation
+### Installation & Running
 
-1. Clone the repository.
-2. Navigate to the `client` directory:
-   ```bash
-   cd client
-   ```
-3. Install the dependencies:
-   ```bash
-   npm install
-   ```
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
 
-### Environment Variables
+2.  **Configure Environment:**
+    Copy the `.env.example` file to a new file named `.env` and fill in the required environment variables.
 
-Create a `.env` file in the `client` directory and add the following variables. These are primarily for connecting to the backend services.
+3.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173`.
+
+## 2. Key Scripts
+
+-   `npm run dev`: Starts the Vite development server.
+-   `npm run build`: Builds the production-ready static assets in the `dist/` folder.
+-   `npm run preview`: Serves the production build locally.
+-   `npm run storybook`: Starts the Storybook component explorer.
+-   `npm test`: Runs all unit tests with Vitest.
+
+## 3. Project Structure
+
+The codebase is organized as follows:
 
 ```
-VITE_API_BASE_URL=http://localhost:3000/api
-VITE_WS_URL=ws://localhost:8080
+/src
+  /assets         # SVG icons, logos, etc.
+  /components     # Reusable React components (Button, Modal, etc.)
+  /hooks          # Custom React hooks (e.g., useMotion)
+  /lib            # Core logic (analytics, engine, provably-fair)
+  /pages          # Top-level page components (Lobby, AviatorGame, etc.)
+  /responsible-gaming # Components for responsible gaming features
+  /tokens         # JSON design tokens for colors, typography
+  /stories        # Storybook files for each component
+  /tests          # E2E and integration tests
 ```
 
-### Running the Development Server
+## 4. Deployment & Operations
 
-To start the frontend development server, run:
+-   **Hosting:** The static frontend (`dist/` folder) is optimized for deployment on a CDN like Vercel, Netlify, or AWS S3 + CloudFront.
+-   **Real-time Backend:** The UI is designed to connect to a WebSocket server for real-time game state updates. See `migration.md` for instructions on replacing the simulator.
+-   **Monitoring:** It is recommended to instrument the frontend with a service like Sentry for error tracking and a product analytics tool for monitoring user behavior.
 
-```bash
-npm run dev
-```
+## 5. Localization (i18n)
 
-The application will be available at `http://localhost:5173`.
-
-## Design System
-
-- **Colors**:
-  - `background`: `#06060A`
-  - `primary`: `#4C6FFF` (electric blue)
-  - `accent`: `#8A3FFC` (purple)
-  - `success`: `#22C55E`
-- **Typography**: Inter
-- **Spacing**: 8px base unit
-- **Corners**: `rounded-2xl` for cards and modals
+-   **Setup:** The project is prepared for internationalization. All UI copy should be extracted into JSON files within an `i18n/` directory.
+-   **Structure:**
+    ```
+    /i18n
+      en.json
+      fr.json
+      ar.json
+    ```
+-   **Implementation:** Use a library like `i18next` with `react-i18next` to load the appropriate locale based on user preference (from Settings) and wrap all text strings.
+-   **RTL Support:** For Right-to-Left languages like Arabic, ensure the layout is flipped. Tailwind CSS has built-in support for RTL using logical properties (e.g., `ms-4` for `margin-start` instead of `ml-4`).

@@ -1,28 +1,31 @@
-import { useState } from 'react';
-import AviatorCanvas from './components/Game/AviatorCanvas';
-import WalletModal from './components/Wallet/WalletModal';
-import { useGameState } from './hooks/useGameState';
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Lazy load page components for better performance
+const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const RegisterPage = React.lazy(() => import('./pages/RegisterPage'));
+
+const LoadingFallback: React.FC = () => (
+  <div className="w-screen h-screen bg-gray-900" />
+);
 
 function App() {
-  const [isWalletOpen, setIsWalletOpen] = useState(false);
-  const { gameState, isConnected } = useGameState();
-
   return (
-    <main className="w-screen h-screen bg-[#06060A] text-white flex flex-col items-center justify-center p-4">
-      <div className="absolute top-4 right-4">
-        <button 
-          onClick={() => setIsWalletOpen(true)} 
-          className="bg-[#8A3FFC] hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg"
-        >
-          Wallet
-        </button>
-      </div>
-      <div className="w-full max-w-4xl h-[600px]">
-        <AviatorCanvas gameState={gameState} isConnected={isConnected} />
-      </div>
-      <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
-    </main>
+    <Router>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="*" element={<Navigate to="/register" replace />} />
+        </Routes>
+      </Suspense>
+    </Router>
   );
 }
 
 export default App;
+
+
+

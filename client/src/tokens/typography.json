@@ -1,0 +1,42 @@
+{
+  "font-family": {
+    "sans": "\"Inter\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial",
+    "display": "\"Outfit\", \"Inter\", system-ui"
+  },
+  "h1": {
+    "font-size": "48px",
+    "line-height": "56px",
+    "font-weight": "700",
+    "letter-spacing": "-0.02em"
+  },
+  "h2": {
+    "font-size": "30px",
+    "line-height": "36px",
+    "font-weight": "600",
+    "letter-spacing": "-0.02em"
+  },
+  "h3": {
+    "font-size": "20px",
+    "line-height": "28px",
+    "font-weight": "600"
+  },
+  "body-lg": {
+    "font-size": "16px",
+    "line-height": "24px",
+    "font-weight": "400"
+  },
+  "body": {
+    "font-size": "14px",
+    "line-height": "20px",
+    "font-weight": "400"
+  },
+  "micro": {
+    "font-size": "12px",
+    "line-height": "16px",
+    "font-weight": "400"
+  },
+  "cta": {
+    "letter-spacing": "0.02em",
+    "text-transform": "uppercase"
+  }
+}

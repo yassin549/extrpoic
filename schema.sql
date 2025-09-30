@@ -24,6 +24,19 @@ CREATE TABLE deposits (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Bets Table
+CREATE TABLE bets (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) NOT NULL,
+    round_id INTEGER REFERENCES game_rounds(id) NOT NULL,
+    amount_tnd NUMERIC(15, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'placed', -- placed, cashed_out, lost
+    cashout_multiplier NUMERIC(10, 2),
+    payout_tnd NUMERIC(15, 2),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, round_id) -- A user can only place one bet per round
+);
+
 -- Withdrawals Table
 CREATE TABLE withdrawals (
     id SERIAL PRIMARY KEY,

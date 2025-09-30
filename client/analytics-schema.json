@@ -1,0 +1,47 @@
+{
+  "events": [
+    {
+      "name": "bet_placed",
+      "payload_schema": {
+        "user_id": "string|null",
+        "anon_id": "string",
+        "session_id": "string",
+        "round_id": "string",
+        "amount": "number",
+        "currency": "string",
+        "placed_at": "iso8601",
+        "mode": "string (demo|real)"
+      }
+    },
+    {
+      "name": "bet_cashed_out",
+      "payload_schema": {
+        "user_id":"string|null",
+        "session_id":"string",
+        "round_id":"string",
+        "amount":"number",
+        "multiplier":"number",
+        "cashout_at":"iso8601",
+        "payout":"number"
+      }
+    },
+    {
+      "name":"round_result",
+      "payload_schema":{
+        "round_id":"string",
+        "outcome_multiplier":"number",
+        "start_time":"iso8601",
+        "end_time":"iso8601",
+        "hash":"string (provably fair)"
+      }
+    },
+    {
+      "name":"deposit_initiated",
+      "payload_schema": { "user_id":"string|null","amount":"number","currency":"string","method":"string" }
+    },
+    {
+      "name":"withdrawal_initiated",
+      "payload_schema": { "user_id":"string","amount":"number","currency":"string","destination":"string" }
+    }
+  ]
+}

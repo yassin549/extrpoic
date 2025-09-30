@@ -1,9 +1,9 @@
-const express = require('express');
 const WebSocket = require('ws');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+const cookie = require('cookie');
 const db = require('../db');
 
-const gameRouter = express.Router();
 const wss = new WebSocket.Server({ noServer: true });
 
 // --- Provably Fair Utilities ---
@@ -38,28 +38,26 @@ async function startNewRound() {
   const roundResult = await db.query('INSERT INTO game_rounds (server_seed, server_seed_hash, status) VALUES ($1, $2, $3) RETURNING id', [serverSeed, serverSeedHash, 'open']);
   currentRound = { id: roundResult.rows[0].id, serverSeed, serverSeedHash, status: 'open' };
   broadcast({ event: 'round.open', data: { roundId: currentRound.id, serverSeedHash } });
-  setTimeout(freezeRound, 5000);
+  setTimeout(freezeRound, 10000); // 10 seconds for betting
 }
 
 async function freezeRound() {
-  const clientSeed = 'default-client-seed';
+  const clientSeed = 'default-client-seed'; // In a real app, this would be collected from players
   const crashMultiplier = calculateCrashMultiplier(currentRound.serverSeed, clientSeed, 1);
-  await db.query('UPDATE game_rounds SET status = $1, crash_multiplier = $2, client_seed = $3 WHERE id = $4', ['freeze', crashMultiplier, clientSeed, currentRound.id]);
-  currentRound = { ...currentRound, status: 'freeze', crashMultiplier };
-  setTimeout(runRound, 1000);
+  await db.query('UPDATE game_rounds SET status = $1, crash_multiplier = $2, client_seed = $3 WHERE id = $4', ['running', crashMultiplier, clientSeed, currentRound.id]);
+  currentRound = { ...currentRound, status: 'running', crashMultiplier };
+  runRound();
 }
 
 async function runRound() {
-  await db.query('UPDATE game_rounds SET status = $1 WHERE id = $2', ['running', currentRound.id]);
-  currentRound.status = 'running';
   let currentMultiplier = 1.00;
   const tick = () => {
     if (currentMultiplier >= currentRound.crashMultiplier) {
       endRound();
       return;
     }
-    currentMultiplier += 0.01;
-    broadcast({ event: 'round.tick', data: { multiplier: parseFloat(currentMultiplier.toFixed(2)) } });
+    currentMultiplier = parseFloat((currentMultiplier * 1.005).toFixed(2));
+    broadcast({ event: 'round.tick', data: { multiplier: currentMultiplier } });
     setTimeout(tick, 100);
   };
   tick();
@@ -68,48 +66,82 @@ async function runRound() {
 async function endRound() {
   await db.query('UPDATE game_rounds SET status = $1 WHERE id = $2', ['crashed', currentRound.id]);
   currentRound.status = 'crashed';
-  broadcast({ event: 'round.crash', data: { crashMultiplier: currentRound.crashMultiplier } });
-  setTimeout(startNewRound, 4000);
+  broadcast({ event: 'round.crash', data: { crashMultiplier: currentRound.crashMultiplier, serverSeed: currentRound.serverSeed } });
+  setTimeout(startNewRound, 5000); // 5 seconds until next round
 }
 
-// --- REST API Endpoints ---
-gameRouter.post('/bet', async (req, res) => {
-  const { userId, amount } = req.body;
-  if (currentRound.status !== 'open') return res.status(400).send('Betting is closed.');
+// --- WebSocket Message Handling ---
+async function handlePlaceBet(ws, data) {
+  if (currentRound.status !== 'open') {
+    return ws.send(JSON.stringify({ event: 'error', message: 'Betting is closed.' }));
+  }
+  const { amount } = data;
+  if (typeof amount !== 'number' || amount <= 0) {
+    return ws.send(JSON.stringify({ event: 'error', message: 'Invalid bet amount.' }));
+  }
+
   try {
     await db.query('BEGIN');
-    await db.query('UPDATE users SET balance_tnd = balance_tnd - $1 WHERE id = $2', [amount, userId]);
-    const betResult = await db.query('INSERT INTO bets (user_id, round_id, amount_tnd) VALUES ($1, $2, $3) RETURNING id', [userId, currentRound.id, amount]);
+    const balanceResult = await db.query('SELECT balance_tnd FROM users WHERE id = $1', [ws.userId]);
+    if (balanceResult.rows[0].balance_tnd < amount) {
+      await db.query('ROLLBACK');
+      return ws.send(JSON.stringify({ event: 'error', message: 'Insufficient balance.' }));
+    }
+
+    await db.query('UPDATE users SET balance_tnd = balance_tnd - $1 WHERE id = $2', [amount, ws.userId]);
+    await db.query('INSERT INTO bets (user_id, round_id, amount_tnd) VALUES ($1, $2, $3)', [ws.userId, currentRound.id, amount]);
     await db.query('COMMIT');
-    res.status(201).json({ betId: betResult.rows[0].id, status: 'placed' });
+
+    ws.send(JSON.stringify({ event: 'bet.placed', data: { amount } }));
   } catch (error) {
     await db.query('ROLLBACK');
-    res.status(500).send('Error placing bet.');
+    console.error('Error placing bet:', error);
+    ws.send(JSON.stringify({ event: 'error', message: 'An error occurred while placing your bet.' }));
   }
-});
+}
 
-gameRouter.post('/cashout', async (req, res) => {
-  const { userId, betId, amount, currentMultiplier } = req.body;
-  if (currentRound.status !== 'running') return res.status(400).send('Cannot cash out now.');
-  const payout = amount * currentMultiplier;
-  try {
-    await db.query('BEGIN');
-    const betUpdate = await db.query('UPDATE bets SET status = $1, cashout_multiplier = $2, payout_tnd = $3 WHERE id = $4 AND user_id = $5 AND status = \'placed\' RETURNING id', ['cashed_out', currentMultiplier, payout, betId, userId]);
-    if (betUpdate.rowCount === 0) return res.status(400).send('Bet already settled or does not exist.');
-    await db.query('UPDATE users SET balance_tnd = balance_tnd + $1 WHERE id = $2', [payout, userId]);
-    await db.query('COMMIT');
-    res.json({ success: true, payout });
-  } catch (error) {
-    await db.query('ROLLBACK');
-    res.status(500).send('Error cashing out.');
-  }
-});
-
-// --- WebSocket Server Attachment ---
+// --- WebSocket Server Setup ---
 function attachWebSocketServer(server) {
   server.on('upgrade', (request, socket, head) => {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit('connection', ws, request);
+    // Authenticate the user via their cookie
+    const cookies = cookie.parse(request.headers.cookie || '');
+    const token = cookies.token;
+
+    if (!token) {
+      socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+      socket.destroy();
+      return;
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+        socket.destroy();
+        return;
+      }
+
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        ws.userId = decoded.userId; // Attach userId to the WebSocket connection
+        wss.emit('connection', ws, request);
+      });
+    });
+  });
+
+  wss.on('connection', (ws) => {
+    console.log(`Client connected: user ${ws.userId}`);
+    ws.on('message', (message) => {
+      try {
+        const parsedMessage = JSON.parse(message);
+        if (parsedMessage.type === 'place.bet') {
+          handlePlaceBet(ws, parsedMessage.data);
+        }
+      } catch (error) {
+        console.error('Failed to parse WebSocket message:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      console.log(`Client disconnected: user ${ws.userId}`);
     });
   });
 }
@@ -117,4 +149,6 @@ function attachWebSocketServer(server) {
 // Start the first round
 startNewRound();
 
-module.exports = { gameRouter, attachWebSocketServer };
+// We no longer need a separate gameRouter for REST
+module.exports = { attachWebSocketServer };
+

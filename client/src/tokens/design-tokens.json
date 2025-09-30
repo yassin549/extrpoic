@@ -1,0 +1,46 @@
+{
+  "color": {
+    "primary-blue": "#2B6FFF",
+    "electric-purple": "#8A3FFC",
+    "neon-amber": "#FFB02E",
+    "emerald-win": "#20D07A",
+    "bg-dark": "#0B0E14",
+    "card-dark": "#0F1720",
+    "muted-surface": "#1B2230",
+    "mid-gray": "#394251",
+    "light-text": "#E6EEF8",
+    "subtle-border": "#253041",
+    "error-red": "#FF5C6C",
+    "info-cyan": "#46C3FF"
+  },
+  "gradient": {
+    "primary-gradient": "linear-gradient(90deg, #2B6FFF 0%, #8A3FFC 100%)",
+    "neon-gradient": "radial-gradient(circle at 30% 30%, #FFB02E 0%, rgba(255,176,46,0) 30%)"
+  },
+  "spacing": {
+    "space-1": "8px",
+    "space-2": "12px",
+    "space-3": "16px",
+    "space-4": "24px",
+    "space-5": "32px",
+    "space-6": "40px",
+    "space-7": "48px",
+    "space-8": "64px"
+  },
+  "radius": {
+    "radius-sm": "8px",
+    "radius-md": "16px",
+    "radius-pill": "999px"
+  },
+  "elevation": {
+    "elevation-1": "0 4px 12px rgba(2,6,23,0.35)",
+    "elevation-2": "0 12px 24px rgba(2,6,23,0.6)"
+  },
+  "motion": {
+    "duration-quick": "90ms",
+    "duration-short": "160ms",
+    "duration-medium": "320ms",
+    "duration-long": "600ms",
+    "easing-standard": "cubic-bezier(.22,1,.36,1)"
+  }
+}

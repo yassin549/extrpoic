@@ -1,0 +1,21 @@
+{
+  "icons": [
+    { "name": "plane", "path": "src/assets/icons/plane.svg", "size": "1KB", "purpose": "Primary motif for flight animation" },
+    { "name": "wallet", "path": "src/assets/icons/wallet.svg", "size": "1KB", "purpose": "Wallet access icon" },
+    { "name": "cashout", "path": "src/assets/icons/cashout.svg", "size": "1KB", "purpose": "Cashout action icon" },
+    { "name": "close", "path": "src/assets/icons/close.svg", "size": "1KB", "purpose": "Modal and panel close icon" },
+    { "name": "copy", "path": "src/assets/icons/copy.svg", "size": "1KB", "purpose": "Copy to clipboard icon" },
+    { "name": "qr", "path": "src/assets/icons/qr.svg", "size": "1KB", "purpose": "QR code icon for deposits" },
+    { "name": "chat", "path": "src/assets/icons/chat.svg", "size": "1KB", "purpose": "Chat toggle icon" },
+    { "name": "leaderboard", "path": "src/assets/icons/leaderboard.svg", "size": "1KB", "purpose": "Leaderboard access icon" },
+    { "name": "settings", "path": "src/assets/icons/settings.svg", "size": "1KB", "purpose": "Settings access icon" },
+    { "name": "responsible", "path": "src/assets/icons/responsible.svg", "size": "1KB", "purpose": "Responsible Gaming access icon" }
+  ],
+  "logos": [
+    { "name": "logo", "path": "src/assets/logo.svg", "size": "2KB", "purpose": "Main brand logo" },
+    { "name": "logo-plane", "path": "src/assets/logo-plane.svg", "size": "1KB", "purpose": "Brand plane mark" }
+  ],
+  "motion": [
+    { "name": "particle-1", "path": "src/assets/svg/particle-1.svg", "size": "1KB", "purpose": "Crash particle effect" }
+  ]
+}

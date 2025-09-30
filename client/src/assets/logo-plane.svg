@@ -1,0 +1,6 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="rotate(18 12 12)">
+    <path d="M2.92893 19.0711C2.53841 18.6805 2.53841 18.0474 2.92893 17.6569L17.6569 2.92893C18.0474 2.53841 18.6805 2.53841 19.0711 2.92893C19.4616 3.31946 19.4616 3.95262 19.0711 4.34315L4.34315 19.0711C3.95262 19.4616 3.31946 19.4616 2.92893 19.0711Z" fill="currentColor"/>
+    <path d="M12 24L12 2.5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
